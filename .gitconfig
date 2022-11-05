@@ -1,0 +1,4 @@
+[includeIf "gitdir:~/flodplain/"]
+  path = ~/.gitconfig-work
+[includeIf "gitdir:~/chronos/"]
+  path = ~/.gitconfig-personal
