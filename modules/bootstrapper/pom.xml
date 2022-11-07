@@ -7,7 +7,7 @@
     <parent>
         <artifactId>starter</artifactId>
         <groupId>org.vundr.chronos</groupId>
-        <version>0.4-SNAPSHOT</version>
+        <version>0.1-SNAPSHOT</version>
         <relativePath>../../libs/common-starter/pom.xml</relativePath>
     </parent>
 
