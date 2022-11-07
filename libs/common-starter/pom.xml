@@ -19,12 +19,18 @@
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <skip.unit.tests>false</skip.unit.tests>
+        <skip.integration.tests>false</skip.integration.tests>
 
         <spring.boot.version>3.0.0-RC1</spring.boot.version>
         <jacoco.version>0.8.8</jacoco.version>
 
         <sonar.organization>vundr</sonar.organization>
+        <sonar.projectKey>vundr_chronos</sonar.projectKey>
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
+
+        <reports.exec.dir>${project.build.directory}/site/exec</reports.exec.dir>
+        <reports.exec.path>${reports.exec.dir}/aggregated.exec</reports.exec.path>
+        <reports.html.dir>${project.build.directory}/site/jacoco</reports.html.dir>
     </properties>
 
     <repositories>
@@ -78,21 +84,26 @@
                     <version>${jacoco.version}</version>
                     <executions>
                         <execution>
+                            <id>before-unit-test-execution</id>
                             <goals>
                                 <goal>prepare-agent</goal>
                             </goals>
                             <configuration>
-                                <destFile>${project.build.directory}/jacoco-ut.exec</destFile>
+                                <destFile>${reports.exec.dir}/jacoco-unit-tests.exec</destFile>
                             </configuration>
                         </execution>
                         <execution>
-                            <id>pre-integration-prepare</id>
+                            <id>before-integration-test-execution</id>
+                            <phase>pre-integration-test</phase>
                             <goals>
-                                <goal>prepare-agent-integration</goal>
+                                <goal>prepare-agent</goal>
                             </goals>
+                            <configuration>
+                                <destFile>${reports.exec.dir}/jacoco-integration-tests.exec</destFile>
+                            </configuration>
                         </execution>
                         <execution>
-                            <id>report</id>
+                            <id>merge-unit-and-integration</id>
                             <phase>post-integration-test</phase>
                             <goals>
                                 <goal>merge</goal>
@@ -100,26 +111,34 @@
                             <configuration>
                                 <fileSets>
                                     <fileSet>
-                                        <directory>${project.build.directory}</directory>
+                                        <directory>${reports.exec.dir}/</directory>
                                         <includes>
                                             <include>*.exec</include>
                                         </includes>
                                     </fileSet>
                                 </fileSets>
+                                <destFile>${reports.exec.dir}/merged.exec</destFile>
                             </configuration>
                         </execution>
                         <execution>
-                            <id>merged-report-generation</id>
-                            <phase>verify</phase>
+                            <id>create-merged-report</id>
+                            <phase>post-integration-test</phase>
                             <goals>
                                 <goal>report</goal>
                             </goals>
+                            <configuration>
+                                <dataFile>${reports.exec.dir}/merged.exec</dataFile>
+                                <outputDirectory>${reports.html.dir}</outputDirectory>
+                            </configuration>
                         </execution>
                     </executions>
                 </plugin>
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>build-helper-maven-plugin</artifactId>
+                    <configuration>
+                        <skip>${skip.integration.tests}</skip>
+                    </configuration>
                     <executions>
                         <execution>
                             <id>add-integration-test-source</id>
@@ -153,7 +172,7 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-failsafe-plugin</artifactId>
                     <configuration>
-                        <skip.integration.tests>false</skip.integration.tests>
+                        <skipITs>${skip.integration.tests}</skipITs>
                     </configuration>
                     <executions>
                         <execution>

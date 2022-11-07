@@ -1,0 +1,119 @@
+name: CI/CD Pipiline
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+
+  tests:
+    name: Unit and Integration Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - name: Set up JDK
+        uses: actions/setup-java@v1
+        with:
+          java-version: '17'
+      - name: Cache Maven Packeges
+        uses: actions/cache@v1
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
+      - name: Run List Unit Tests
+        run: mvn -f libs/common-starter/pom.xml test
+      - name: Run Modules Unit Tests
+        run: mvn -f modules/bootstrapper/pom.xml test
+      - name: Run Modules Integration Tests
+        run: mvn -f modules/bootstrapper/pom.xml verify -Dskip.unit.tests=true
+
+    sonar:
+      needs: tests
+      name: SonarCloud Checks
+      runs-on: ubuntu-latest
+      steps:
+        - uses: actions/checkout@v2
+          with:
+            fetch-depth: 0
+        - name: Set up JDK
+          uses: actions/setup-java@v1
+          with:
+            java-version: 17
+        - name: Cache SonarCloud packages
+          uses: actions/cache@v1
+          with:
+            path: ~/.sonar/cache
+            key: ${{ runner.os }}-sonar
+            restore-keys: ${{ runner.os }}-sonar
+        - name: Cache Maven packages
+          uses: actions/cache@v1
+          with:
+            path: ~/.m2
+            key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+            restore-keys: ${{ runner.os }}-m2
+        - name: Build and analyze
+          env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          run: mvn -f modules/bootstrapper/pom.xml -X compile org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=vundr_chronos -Dsonar.coverage.jacoco.xmlReportPaths=jacoco.xml
+
+
+  publish-artifcat:
+    name: Publish artifact
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - name: Set up JDK
+        uses: actions/setup-java@v1
+        with:
+          java-version: '17'
+      - name: Cache Maven Packeges
+        uses: actions/cache@v1
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
+      - name: Create artifact
+        run: mvn -f modules/bootstrapper/pom.xml package
+      - name: Upload artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: chronos-artifact
+          path: modules/bootstrapper/target/bootstrapper-0.1-SNAPSHOT.jar
+          retention-days: 1
+
+  build-and-deploy:
+    needs: publish-artifcat
+    name: Build and Deploy Docker Image
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: eu-central-1
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Retrieve saved Docker image
+        uses: actions/download-artifact@v2
+        with:
+          name: chronos-artifact
+          path: modules/bootstrapper/target/bootstrapper-0.1-SNAPSHOT.jar
+
+      - name: Build, tag, and push image to Amazon ECR
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: chronos
+          IMAGE_TAG: chronos
+        run: |
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+
