@@ -17,8 +17,6 @@
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
 
-        <sonar.sources>.</sonar.sources>
-        <sonar.tests>src/test/java,src/integration-test/java</sonar.tests>
         <reports.html.dir>${project.build.directory}/site/jacoco</reports.html.dir>
         <sonar.coverage.jacoco.xmlReportPaths>${reports.html.dir}/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
         <!--<source.jar.file.location>${project.build.directory}/${project.build.finalName}-sources.jar
