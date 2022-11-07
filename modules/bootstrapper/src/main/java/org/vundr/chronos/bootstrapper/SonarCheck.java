@@ -5,4 +5,5 @@ public class SonarCheck {
     public String getString() {
         return "string";
     }
+
 }
