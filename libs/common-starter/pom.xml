@@ -12,7 +12,7 @@
 
     <groupId>org.vundr.chronos</groupId>
     <artifactId>starter</artifactId>
-    <version>0.1-SNAPSHOT</version>
+    <version>0.4-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <properties>
