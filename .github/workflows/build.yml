@@ -20,5 +20,9 @@ jobs:
           path: ~/.m2
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
-      - name: Run Tests
-        run: mvn -B test
+      - name: Run libs tests
+        run: mvn -f libs/common-starter/pom.xml test
+      - name: Run modules unit tests
+          run: mvn -f modules/bootstrapper/pom.xml test
+      - name: Run Modules integration tests
+          run: mvn -f modules/bootstrapper/pom.xml verify -Dskip.unit.tests=true

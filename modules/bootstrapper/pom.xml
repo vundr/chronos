@@ -7,7 +7,8 @@
     <parent>
         <artifactId>starter</artifactId>
         <groupId>org.vundr.chronos</groupId>
-        <version>0.1-SNAPSHOT</version>
+        <version>0.4-SNAPSHOT</version>
+        <relativePath>../../libs/common-starter/pom.xml</relativePath>
     </parent>
 
     <artifactId>bootstrapper</artifactId>
@@ -15,95 +16,18 @@
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
-
-        <surefire.plugin.version>2.22.2</surefire.plugin.version>
-        <jacoco.plugin.version>0.8.7</jacoco.plugin.version>
-        <buildhelper.plugin.version>3.2.0</buildhelper.plugin.version>
-        <compiler.plugin.version>3.8.1</compiler.plugin.version>
-        <source.plugin.version>3.2.1</source.plugin.version>
     </properties>
+
 
     <build>
         <plugins>
-            <!--<plugin>
+            <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>build-helper-maven-plugin</artifactId>
-                <version>1.5</version>
-                <executions>
-                    <execution>
-                        <id>add-test-source</id>
-                        <phase>process-resources</phase>
-                        <goals>
-                            <goal>add-test-source</goal>
-                        </goals>
-                        <configuration>
-                            <sources>
-                                <source>src/integration-test/java</source>
-                            </sources>
-                        </configuration>
-                    </execution>
-                </executions>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-failsafe-plugin</artifactId>
-                <version>2.15</version>
-                <executions>
-                    <execution>
-                        <id>integration-test</id>
-                        <goals>
-                            <goal>integration-test</goal>
-                        </goals>
-                        <configuration>
-                            <includes>
-                                <include>**/*IT</include>
-                            </includes>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>verify</id>
-                        <goals>
-                            <goal>verify</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>-->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <version>${surefire.plugin.version}</version>
-                <configuration>
-                    <groups>unittest,integrationtest</groups>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>build-helper-maven-plugin</artifactId>
-                <version>${buildhelper.plugin.version}</version>
-                <configuration>
-                    <sources>
-                        <source>src/integration-test/java</source>
-                    </sources>
-                    <resources>
-                        <resource>
-                            <directory>src/integration-test/resources</directory>
-                            <targetPath>./</targetPath>
-                            <includes>
-                                <include>**/*</include>
-                            </includes>
-                        </resource>
-                    </resources>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>add-test-source</id>
-                        <phase>process-resources</phase>
-                        <goals>
-                            <goal>add-test-source</goal>
-                            <goal>add-test-resource</goal>
-                        </goals>
-                    </execution>
-                </executions>
             </plugin>
         </plugins>
     </build>
