@@ -8,6 +8,7 @@
         <artifactId>starter</artifactId>
         <groupId>org.vundr.chronos</groupId>
         <version>0.1-SNAPSHOT</version>
+        <relativePath>../../libs/common-starter/pom.xml</relativePath>
     </parent>
 
     <artifactId>bootstrapper</artifactId>
@@ -16,5 +17,22 @@
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
     </properties>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>
