@@ -17,6 +17,7 @@
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
 
+        <sonar.sources>.</sonar.sources>
         <sonar.tests>src/test/java,src/integration-test/java</sonar.tests>
         <!--<sonar.coverage.jacoco.xmlReportPaths>${reports.html.dir}/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths> -->
         <sonar.exclusions>**/MavenWrapperDownloader.java</sonar.exclusions>
@@ -37,6 +38,19 @@
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.sonarsource.scanner.maven</groupId>
+                <artifactId>sonar-maven-plugin</artifactId>
+                <version>3.7.0.1746</version>
+                <executions>
+                    <execution>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>sonar</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
