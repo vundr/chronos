@@ -21,6 +21,9 @@
         <skip.unit.tests>false</skip.unit.tests>
 
         <spring.boot.version>3.0.0-RC1</spring.boot.version>
+
+        <sonar.organization>vundr</sonar.organization>
+        <sonar.host.url>https://sonarcloud.io</sonar.host.url>
     </properties>
 
     <repositories>
