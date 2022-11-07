@@ -1,12 +1,14 @@
-name: CI/CD Pipeline
+name: CI/CD Pipiline
+
 on:
-  workflow_dispatch:
   push:
     branches:
       - master
+
 jobs:
+
   tests:
-    name: Unit tests
+    name: Unit and Integration Tests
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
@@ -14,15 +16,15 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: '17'
-      - name: Cache Maven packages
+      - name: Cache Maven Packeges
         uses: actions/cache@v1
         with:
           path: ~/.m2
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
-      - name: Run libs tests
+      - name: Run List Unit Tests
         run: mvn -f libs/common-starter/pom.xml test
-      - name: Run modules unit tests
+      - name: Run Modules Unit Tests
         run: mvn -f modules/bootstrapper/pom.xml test
-      - name: Run Modules integration tests
+      - name: Run Modules Integration Tests
         run: mvn -f modules/bootstrapper/pom.xml verify -Dskip.unit.tests=true
