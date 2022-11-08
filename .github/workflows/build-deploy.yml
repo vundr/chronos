@@ -2,6 +2,12 @@ name: New CI/CD Pipiline
 
 env:
   JAVA_VERSION: '17'
+  COMMON_STARTER_PATH: libs/common-starter
+  BOOTSTAPPER_PATH: modules/bootstrapper
+  JACOCO_UNIT_TEST_PATH: modules/bootstrapper/target/site/exec
+  JACOCO_AGGREGATED_COVERAGE_PATH: modules/bootstrapper/target/site/jacoco
+  JACOCO_UNIT_TEST_EXEC_NAME: jacoco-unit-tests.exec
+  JACOCO_AGGREGATED_COVERAGE_XML_NAME: jacoco.xml
 
 on:
   push:
@@ -30,16 +36,16 @@ jobs:
             ${{ runner.os }}-maven-
 
       - name: Run Unit Common Start Tests
-        run: mvn -f libs/common-starter/pom.xml verify -Dskip.integration.tests=true
+        run: mvn -f ${{ env.COMMON_STARTER_PATH }}/pom.xml verify -Dskip.integration.tests=true
 
       - name: Run Unit Bootstrapper Tests
-        run: mvn -f modules/bootstrapper/pom.xml verify -Dskip.integration.tests=true
+        run: mvn -f ${{ env.BOOTSTAPPER_PATH }}/pom.xml verify -Dskip.integration.tests=true
 
       - name: Upload Unit Tests Report
         uses: actions/upload-artifact@v3
         with:
           name: unit-test-report
-          path: modules/bootstrapper/target/site/exec/jacoco-unit-tests.exec
+          path: ${{ env.JACOCO_UNIT_TEST_PATH }}/${{ env.JACOCO_UNIT_TEST_EXEC }}
           retention-days: 1
 
   integration-tests:
@@ -66,10 +72,10 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: unit-test-report
-          path: modules/bootstrapper/target/site/exec
+          path: ${{ env.JACOCO_UNIT_TEST_PATH }}
 
       - name: Run Integration Bootstrapper Tests
-        run: mvn -f modules/bootstrapper/pom.xml verify -Dskip.unit.tests=true
+        run: mvn -f ${{ env.BOOTSTAPPER_PATH }}/pom.xml verify -Dskip.unit.tests=true
 
       - name: Cache SonarCloud packages
         uses: actions/cache@v1
@@ -82,7 +88,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: test-coverage-report
-          path: modules/bootstrapper/target/site/jacoco/jacoco.xml
+          path: ${{ env.JACOCO_AGGREGATED_COVERAGE_PATH }}/${{ env.JACOCO_AGGREGATED_COVERAGE_XML_NAME }}
           retention-days: 1
 
   sonar:
@@ -116,10 +122,10 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: test-coverage-report
-          path: modules/bootstrapper
+          path: ${{ env.BOOTSTAPPER_PATH }}
 
       - name: Analyze
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: mvn -f modules/bootstrapper/pom.xml -X compile org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=vundr_chronos -Dsonar.coverage.jacoco.xmlReportPaths=jacoco.xml
+        run: mvn -f ${{ env.BOOTSTAPPER_PATH }}/pom.xml compile org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=vundr_chronos -Dsonar.coverage.jacoco.xmlReportPaths=${{ env.JACOCO_AGGREGATED_COVERAGE_XML_NAME }}
