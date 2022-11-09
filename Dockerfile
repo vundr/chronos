@@ -4,10 +4,10 @@ FROM openjdk:17-jdk-slim
 WORKDIR /app
 
 # Copy application files
-COPY modules/bootstrapper/target/*.jar app.jar
+COPY modules/bootstrapper/target/chronos.jar chronos.jar
 
 # Expose PORT
 EXPOSE 8080
 
 # Run application
-ENTRYPOINT ["java", "-jar", "app.jar"]
+ENTRYPOINT ["java", "-jar", "chronos.jar"]
