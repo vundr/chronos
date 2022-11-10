@@ -16,7 +16,10 @@ on:
   push:
     branches:
       - master
-
+    paths:
+      - libs/**
+      - modules/**
+      - .github/**
 jobs:
 
   unit-tests:
