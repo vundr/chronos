@@ -72,7 +72,7 @@ market
 
 ### Container Orchestration
 
-**AWS ECS + EC2:**
+**AWS ECS + FARGATE:**
 
 - Easy to integration with AWS
 - Totally free
