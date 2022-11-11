@@ -1,10 +1,12 @@
 name: CI Pipiline
 
 on:
-  workflow_call:
-    secrets:
-      SONAR_TOKEN:
-        required: true
+  push:
+    branches:
+      - master
+    paths:
+      - libs/**
+      - modules/**
   pull_request:
     types: [ opened, reopened ]
 
